@@ -100,6 +100,10 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     public void swap2nodes(Node<E> aBefore, Node<E> bBefore) {
+        if (aBefore == null || bBefore == null || aBefore == bBefore) {
+            return; 
+        }
+
         Node<E> temp = aBefore.getNext();
         aBefore.setNext(bBefore.getNext());
         bBefore.setNext(temp);
@@ -114,7 +118,10 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     // write your codes here
     public void swap() {
-        Node<E> dummy = new Node(null, head);
+        if (size < 2) {
+            return; 
+        }
+        Node<E> dummy = new Node<>(null, head);
         Node<E> max = dummy;
         Node<E> min = dummy;
         Node<E> curr = dummy;
@@ -126,8 +133,12 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             if (min.getNext().getElement().compareTo(curr.getNext().getElement()) > 0) {
                 min = curr;
             }
+            curr = curr.getNext(); 
         }
         swap2nodes(min, max);
+        Node<E> tmptmp = min;
+        min = max; 
+        max = tmptmp; 
         for (int i = 0; i < size / 2 - 1; i++) {
             Node<E> currmax = null;
             Node<E> currmin = null;
@@ -142,10 +153,15 @@ public class SinglyLinkedList<E extends Comparable<E>> {
                         || curr.getNext().getElement().compareTo(currmin.getNext().getElement()) < 0)) {
                     currmin = curr;
                 }
+                curr = curr.getNext();
+            }
+
+            if (currmax == null || currmin == null) {
+                return; 
             }
             swap2nodes(currmax, currmin);
-            max = currmax;
-            min = currmin;
+            max = currmin;
+            min = currmax;
         }
         head = dummy.getNext();
         tail = head;
