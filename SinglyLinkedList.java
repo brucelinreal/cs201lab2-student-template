@@ -99,76 +99,59 @@ public class SinglyLinkedList<E extends Comparable<E>> {
         return sb.toString();
     }
 
-    private void swap2nodes(Node<E> a, Node<E> b) {
-        if (a == b)
-            return;
-
-        Node<E> beforeA = null;
-        Node<E> beforeB = null;
-        Node<E> current = head;
-
-        while (current != null) {
-            if (current.getNext() == a)
-                beforeA = current;
-            if (current.getNext() == b)
-                beforeB = current;
-            current = current.getNext();
-        }
-
-        if (a.getNext() == b) {
-            if (beforeA == null)
-                head = b;
-            else
-                beforeA.setNext(b);
-
-            a.setNext(b.getNext());
-            b.setNext(a);
-        } else if (b.getNext() == a) {
-            if (beforeB == null)
-                head = a;
-            else
-                beforeB.setNext(a);
-
-            b.setNext(a.getNext());
-            a.setNext(b);
-        } else {
-            if (beforeA == null)
-                head = b;
-            else
-                beforeA.setNext(b);
-
-            if (beforeB == null)
-                head = a;
-            else
-                beforeB.setNext(a);
-
-            Node<E> temp = a.getNext();
-            a.setNext(b.getNext());
-            b.setNext(temp);
-        }
-
-        if (tail == a)
-            tail = b;
-        else if (tail == b)
-            tail = a;
-    }
-
     public void swap() {
-        if (size < 2)
-            return;
-
-        ArrayList<Node<E>> nodes = new ArrayList<>();
+        ArrayList<E> elementList = new ArrayList<>();
         Node<E> current = head;
 
         while (current != null) {
-            nodes.add(current);
+            E value = current.getElement();
+            elementList.add(value);
             current = current.getNext();
         }
+        Collections.sort(elementList);
 
-        nodes.sort((a, b) -> a.getElement().compareTo(b.getElement()));
-
+        int size = elementList.size();
         for (int i = 0; i < size / 2; i++) {
-            swap2nodes(nodes.get(i), nodes.get(size - 1 - i));
+            E smallestValue = elementList.get(i);
+            E largestValue = elementList.get(size - i - 1);
+
+            if (smallestValue.equals(largestValue)) {
+                continue;
+            }
+
+            Node<E> largest = head;
+            Node<E> prevLargest = null;
+            while (!largest.getElement().equals(largestValue)) {
+                prevLargest = largest;
+                largest = largest.getNext();
+            }
+
+            Node<E> smallest = head;
+            Node<E> prevSmallest = null;
+            while (!smallest.getElement().equals(smallestValue)) {
+                prevSmallest = smallest;
+                smallest = smallest.getNext();
+            }
+
+            if (prevLargest != null) {
+                prevLargest.setNext(smallest);
+            } else {
+                head = smallest;
+            }
+
+            if (prevSmallest != null) {
+                prevSmallest.setNext(largest);
+            } else {
+                head = largest;
+            }
+
+            Node<E> temp = smallest.getNext();
+            smallest.setNext(largest.getNext());
+            largest.setNext(temp);
+        }
+        tail = head;
+        while (tail.getNext() != null) {
+            tail = tail.getNext();
         }
     }
 
