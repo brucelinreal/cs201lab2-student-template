@@ -101,25 +101,40 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     public void swap2nodes(Node<E> aBefore, Node<E> bBefore) {
         if (aBefore == null || bBefore == null || aBefore == bBefore) {
-            return; 
+            return;
         }
 
-        Node<E> temp = aBefore.getNext();
-        aBefore.setNext(bBefore.getNext());
-        bBefore.setNext(temp);
-        aBefore = aBefore.getNext();
-        bBefore = bBefore.getNext();
+        Node<E> aA = aBefore.getNext();
+        Node<E> bB = bBefore.getNext();
 
-        temp = aBefore.getNext();
-        aBefore.setNext(bBefore.getNext());
-        bBefore.setNext(temp);
+        if (aA == bB || aA == null || bB == null) {
+            return;
+        }
 
+        if (aA == bBefore) {
+            aBefore.setNext(bB);
+            aA.setNext(bB.getNext());
+            bB.setNext(aA);;
+        }
+
+        if (bB == aBefore) {
+            bBefore.setNext(aA);
+            bB.setNext(aA.getNext());
+            aA.setNext(bB);;
+        }
+
+        Node<E> temp = aA.getNext();
+        aBefore.setNext(bB);
+        bBefore.setNext(aA);
+
+        aA.setNext(bB.getNext());
+        bB.setNext(temp);
     }
 
     // write your codes here
     public void swap() {
         if (size < 2) {
-            return; 
+            return;
         }
         Node<E> dummy = new Node<>(null, head);
         Node<E> max = dummy;
@@ -133,12 +148,12 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             if (min.getNext().getElement().compareTo(curr.getNext().getElement()) > 0) {
                 min = curr;
             }
-            curr = curr.getNext(); 
+            curr = curr.getNext();
         }
         swap2nodes(min, max);
         Node<E> tmptmp = min;
-        min = max; 
-        max = tmptmp; 
+        min = max;
+        max = tmptmp;
         for (int i = 0; i < size / 2 - 1; i++) {
             Node<E> currmax = null;
             Node<E> currmin = null;
@@ -157,7 +172,7 @@ public class SinglyLinkedList<E extends Comparable<E>> {
             }
 
             if (currmax == null || currmin == null) {
-                return; 
+                return;
             }
             swap2nodes(currmax, currmin);
             max = currmin;
