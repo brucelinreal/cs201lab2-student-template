@@ -100,87 +100,92 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     public void swap2nodes(Node<E> aBefore, Node<E> bBefore) {
-        if (aBefore == null || bBefore == null || aBefore == bBefore) {
+        if (aBefore == bBefore) {
             return;
         }
 
         Node<E> aA = aBefore.getNext();
         Node<E> bB = bBefore.getNext();
 
-        if (aA == bB || aA == null || bB == null) {
+        if (aA == null || bB == null) {
             return;
         }
 
         if (aA == bBefore) {
             aBefore.setNext(bB);
             aA.setNext(bB.getNext());
-            bB.setNext(aA);;
+            bB.setNext(aA);
+            return;
         }
 
         if (bB == aBefore) {
             bBefore.setNext(aA);
             bB.setNext(aA.getNext());
-            aA.setNext(bB);;
+            aA.setNext(bB);
+            return;
         }
 
         Node<E> temp = aA.getNext();
         aBefore.setNext(bB);
         bBefore.setNext(aA);
-
         aA.setNext(bB.getNext());
         bB.setNext(temp);
     }
 
-    // write your codes here
     public void swap() {
         if (size < 2) {
             return;
         }
-        Node<E> dummy = new Node<>(null, head);
-        Node<E> max = dummy;
-        Node<E> min = dummy;
-        Node<E> curr = dummy;
-        while (curr.getNext() != null) {
-            if (max.getNext().getElement().compareTo(curr.getNext().getElement()) < 0) {
-                max = curr;
-            }
 
-            if (min.getNext().getElement().compareTo(curr.getNext().getElement()) > 0) {
-                min = curr;
-            }
+        Node<E> dummy = new Node<>(null, head);
+        ArrayList<Node<E>> nodes = new ArrayList<>();
+        Node<E> curr = head;
+
+        while (curr != null) {
+            nodes.add(curr);
             curr = curr.getNext();
         }
-        swap2nodes(min, max);
-        Node<E> tmptmp = min;
-        min = max;
-        max = tmptmp;
-        for (int i = 0; i < size / 2 - 1; i++) {
-            Node<E> currmax = null;
-            Node<E> currmin = null;
-            curr = dummy;
-            while (curr.getNext() != null) {
-                if ((curr.getNext().getElement().compareTo(max.getNext().getElement()) < 0) && (currmax == null
-                        || curr.getNext().getElement().compareTo(currmax.getNext().getElement()) > 0)) {
-                    currmax = curr;
-                }
 
-                if ((curr.getNext().getElement().compareTo(min.getNext().getElement()) > 0) && (currmin == null
-                        || curr.getNext().getElement().compareTo(currmin.getNext().getElement()) < 0)) {
+        // Sort the references using ordinary loops (no lambda).
+        for (int i = 0; i < nodes.size() - 1; i++) {
+            int smallestIndex = i;
+
+            for (int j = i + 1; j < nodes.size(); j++) {
+                if (nodes.get(j).getElement()
+                        .compareTo(nodes.get(smallestIndex).getElement()) < 0) {
+                    smallestIndex = j;
+                }
+            }
+
+            Node<E> temp = nodes.get(i);
+            nodes.set(i, nodes.get(smallestIndex));
+            nodes.set(smallestIndex, temp);
+        }
+
+        for (int i = 0; i < size / 2; i++) {
+            Node<E> min = nodes.get(i);
+            Node<E> max = nodes.get(size - 1 - i);
+
+            Node<E> currmin = null;
+            Node<E> currmax = null;
+            curr = dummy;
+
+            while (curr.getNext() != null) {
+                if (curr.getNext() == min) {
                     currmin = curr;
+                }
+                if (curr.getNext() == max) {
+                    currmax = curr;
                 }
                 curr = curr.getNext();
             }
 
-            if (currmax == null || currmin == null) {
-                return;
-            }
-            swap2nodes(currmax, currmin);
-            max = currmin;
-            min = currmax;
+            swap2nodes(currmin, currmax);
         }
+
         head = dummy.getNext();
         tail = head;
-        for (int i = 0; i < size - 1; i++) {
+        while (tail.getNext() != null) {
             tail = tail.getNext();
         }
     }
