@@ -101,58 +101,51 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     public void swap() {
         ArrayList<E> elementList = new ArrayList<>();
-        Node<E> current = head;
+        ArrayList<Node<E>> originalNodes = new ArrayList<>();
+        HashMap<E, Node<E>> nodeByValue = new HashMap<>();
 
+        Node<E> current = head;
         while (current != null) {
-            E value = current.getElement();
-            elementList.add(value);
+            elementList.add(current.getElement());
+            originalNodes.add(current);
+            nodeByValue.put(current.getElement(), current);
             current = current.getNext();
+        }
+
+        int size = elementList.size();
+
+        if (size == 0) {
+            return;
         }
         Collections.sort(elementList);
 
-        int size = elementList.size();
-        for (int i = 0; i < size / 2; i++) {
-            E smallestValue = elementList.get(i);
-            E largestValue = elementList.get(size - i - 1);
+        HashMap<E, E> oppositeValue = new HashMap<>();
 
-            if (smallestValue.equals(largestValue)) {
-                continue;
-            }
-
-            Node<E> largest = head;
-            Node<E> prevLargest = null;
-            while (!largest.getElement().equals(largestValue)) {
-                prevLargest = largest;
-                largest = largest.getNext();
-            }
-
-            Node<E> smallest = head;
-            Node<E> prevSmallest = null;
-            while (!smallest.getElement().equals(smallestValue)) {
-                prevSmallest = smallest;
-                smallest = smallest.getNext();
-            }
-
-            if (prevLargest != null) {
-                prevLargest.setNext(smallest);
-            } else {
-                head = smallest;
-            }
-
-            if (prevSmallest != null) {
-                prevSmallest.setNext(largest);
-            } else {
-                head = largest;
-            }
-
-            Node<E> temp = smallest.getNext();
-            smallest.setNext(largest.getNext());
-            largest.setNext(temp);
+        for (int i = 0; i < size; i++) {
+            oppositeValue.put(
+                    elementList.get(i),
+                    elementList.get(size - 1 - i));
         }
-        tail = head;
-        while (tail.getNext() != null) {
-            tail = tail.getNext();
+
+
+        Node<E> previous = null;
+
+        for (int i = 0; i < size; i++) {
+            Node<E> original = originalNodes.get(i);
+            E valueToReplaceItWith = oppositeValue.get(original.getElement());
+            Node<E> replacement = nodeByValue.get(valueToReplaceItWith);
+
+            if (previous == null) {
+                head = replacement;
+            } else {
+                previous.setNext(replacement);
+            }
+
+            previous = replacement;
         }
+
+        tail = previous;
+        tail.setNext(null);
     }
 
 }
