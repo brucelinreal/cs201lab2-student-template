@@ -99,94 +99,76 @@ public class SinglyLinkedList<E extends Comparable<E>> {
         return sb.toString();
     }
 
-    public void swap2nodes(Node<E> aBefore, Node<E> bBefore) {
-        if (aBefore == bBefore) {
+    private void swap2nodes(Node<E> a, Node<E> b) {
+        if (a == b)
             return;
+
+        Node<E> beforeA = null;
+        Node<E> beforeB = null;
+        Node<E> current = head;
+
+        while (current != null) {
+            if (current.getNext() == a)
+                beforeA = current;
+            if (current.getNext() == b)
+                beforeB = current;
+            current = current.getNext();
         }
 
-        Node<E> aA = aBefore.getNext();
-        Node<E> bB = bBefore.getNext();
+        if (a.getNext() == b) {
+            if (beforeA == null)
+                head = b;
+            else
+                beforeA.setNext(b);
 
-        if (aA == null || bB == null) {
-            return;
+            a.setNext(b.getNext());
+            b.setNext(a);
+        } else if (b.getNext() == a) {
+            if (beforeB == null)
+                head = a;
+            else
+                beforeB.setNext(a);
+
+            b.setNext(a.getNext());
+            a.setNext(b);
+        } else {
+            if (beforeA == null)
+                head = b;
+            else
+                beforeA.setNext(b);
+
+            if (beforeB == null)
+                head = a;
+            else
+                beforeB.setNext(a);
+
+            Node<E> temp = a.getNext();
+            a.setNext(b.getNext());
+            b.setNext(temp);
         }
 
-        if (aA == bBefore) {
-            aBefore.setNext(bB);
-            aA.setNext(bB.getNext());
-            bB.setNext(aA);
-            return;
-        }
-
-        if (bB == aBefore) {
-            bBefore.setNext(aA);
-            bB.setNext(aA.getNext());
-            aA.setNext(bB);
-            return;
-        }
-
-        Node<E> temp = aA.getNext();
-        aBefore.setNext(bB);
-        bBefore.setNext(aA);
-        aA.setNext(bB.getNext());
-        bB.setNext(temp);
+        if (tail == a)
+            tail = b;
+        else if (tail == b)
+            tail = a;
     }
 
     public void swap() {
-        if (size < 2) {
+        if (size < 2)
             return;
-        }
 
-        Node<E> dummy = new Node<>(null, head);
         ArrayList<Node<E>> nodes = new ArrayList<>();
-        Node<E> curr = head;
+        Node<E> current = head;
 
-        while (curr != null) {
-            nodes.add(curr);
-            curr = curr.getNext();
+        while (current != null) {
+            nodes.add(current);
+            current = current.getNext();
         }
 
-        // Sort the references using ordinary loops (no lambda).
-        for (int i = 0; i < nodes.size() - 1; i++) {
-            int smallestIndex = i;
-
-            for (int j = i + 1; j < nodes.size(); j++) {
-                if (nodes.get(j).getElement()
-                        .compareTo(nodes.get(smallestIndex).getElement()) < 0) {
-                    smallestIndex = j;
-                }
-            }
-
-            Node<E> temp = nodes.get(i);
-            nodes.set(i, nodes.get(smallestIndex));
-            nodes.set(smallestIndex, temp);
-        }
+        nodes.sort((a, b) -> a.getElement().compareTo(b.getElement()));
 
         for (int i = 0; i < size / 2; i++) {
-            Node<E> min = nodes.get(i);
-            Node<E> max = nodes.get(size - 1 - i);
-
-            Node<E> currmin = null;
-            Node<E> currmax = null;
-            curr = dummy;
-
-            while (curr.getNext() != null) {
-                if (curr.getNext() == min) {
-                    currmin = curr;
-                }
-                if (curr.getNext() == max) {
-                    currmax = curr;
-                }
-                curr = curr.getNext();
-            }
-
-            swap2nodes(currmin, currmax);
-        }
-
-        head = dummy.getNext();
-        tail = head;
-        while (tail.getNext() != null) {
-            tail = tail.getNext();
+            swap2nodes(nodes.get(i), nodes.get(size - 1 - i));
         }
     }
 
